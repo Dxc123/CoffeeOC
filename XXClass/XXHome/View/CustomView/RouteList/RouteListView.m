@@ -1,0 +1,192 @@
+//
+//  RouteListView.m
+//  test
+//
+//  Created by 岳杰 on 2016/12/14.
+//  Copyright © 2016年 岳杰. All rights reserved.
+//
+
+#import "RouteListView.h"
+#import "RouteListTableViewCell.h"
+#import "RouteModel.h"
+//#import "AMModuleAPI.h"
+#import <AFNetworking.h>
+#import <Masonry.h>
+
+#define MANAGER_ID [[NSUserDefaults standardUserDefaults] objectForKey:@"managerId"]
+
+@interface RouteListView ()<UITableViewDelegate, UITableViewDataSource>
+
+@property (nonatomic, strong) UITableView *listTableView;
+
+@property (nonatomic, strong) NSMutableArray *routeArr;
+
+@property (nonatomic, copy) void(^action)(NSString *route_id, NSString *route_name);
+
+@property (nonatomic, copy) NSString *routeId;
+
+@property (nonatomic, assign) NSInteger row;
+
+@end
+
+@implementation RouteListView
+#pragma mark - init
+- (instancetype)initWithFrame:(CGRect)frame
+                      routeId:(NSString *)routeId
+                       action:(void (^)(NSString *, NSString *))action
+{
+    self = [super initWithFrame:frame];
+    if (self) {
+        UIColor *color = [UIColor blackColor];
+        self.backgroundColor = [color colorWithAlphaComponent:0.6];
+        self.action = action;
+        self.routeId = routeId;
+        [self loadData];
+        [self show];
+    }
+    return self;
+}
+
++ (id)routeId:(NSString *)routeId action:(void (^)(NSString *, NSString *))action
+{
+    return [[RouteListView alloc] initWithFrame:[UIScreen mainScreen].bounds routeId:routeId action:action];
+}
+
+
+#pragma mark - UITableViewDelegate and UITableViewDataSource
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return self.routeArr.count;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    static NSString *reuse = @"RouteListTableViewCell";
+    RouteListTableViewCell *cell = [[RouteListTableViewCell alloc] init];
+    if (!cell) {
+        cell = [tableView dequeueReusableCellWithIdentifier:reuse forIndexPath:indexPath];
+    }
+    cell.selectionStyle=UITableViewCellSelectionStyleNone;
+    RouteModel *route = self.routeArr[indexPath.row];
+    cell.titleLabel.text = route.routeName;
+    if ([self.routeId isEqualToString:route.routeId]) {
+        cell.imgView.hidden = NO;
+    }
+    return cell;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return 50 * UISCALE;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    [self.listTableView deselectRowAtIndexPath:indexPath animated:YES];
+    RouteModel *route = self.routeArr[indexPath.row];
+    [self hide];
+    if (self.action) {
+        self.action(route.routeId, route.routeName);
+    }
+}
+
+#pragma mark - public method
+- (void)show {
+    [[UIApplication sharedApplication].keyWindow addSubview:self];
+    [self showListView];
+}
+
+- (void)showListView {
+    
+    if (self.routeArr.count >= 4) {
+        [UIView animateWithDuration:0.2 animations:^{
+            self.alpha = 1;
+            self.listTableView.frame = CGRectMake(0, SCREEN_WIDTH/2, SCREEN_WIDTH, 4 * 50 * UISCALE);
+            [self.listTableView reloadData];
+        }];
+    } else {
+        [UIView animateWithDuration:0.2 animations:^{
+            self.alpha = 1;
+            self.listTableView.frame = CGRectMake(0, SCREEN_WIDTH/2, SCREEN_WIDTH, self.routeArr.count * 50 * UISCALE);
+            [self.listTableView reloadData];
+        }];
+    }
+}
+
+- (void)hide {
+    [UIView animateWithDuration:0.2 animations:^{
+        self.alpha = 0;
+        self.listTableView.frame = CGRectMake(0, SCREEN_WIDTH/2, SCREEN_WIDTH, 0);
+    } completion:^(BOOL finished) {
+        [self.listTableView removeFromSuperview];
+        [self removeFromSuperview];
+    }];
+}
+
+
+#pragma mark - private method
+- (void)loadData
+{
+
+   //    获取用户线路列表 GET api/home/routelist/{managerId}
+    [[AFHTTPSessionManager manager] GET:[NSString stringWithFormat:@"%@/api/home/routelist/%@",API_IP,MANAGER_ID] parameters:nil progress:^(NSProgress * _Nonnull downloadProgress) {
+    } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        NSLog(@"获取用户线路列表=%@",responseObject);
+        if ([responseObject[@"error_code"] integerValue] == 00000) {
+            for (NSDictionary *dic in responseObject[@"RouteList"]) {
+                RouteModel *model = [[RouteModel alloc] init];
+                [model setValuesForKeysWithDictionary:dic];
+                [self.routeArr addObject:model];
+            }
+        }
+        for (NSInteger i = 0; i < self.routeArr.count; i++) {
+            RouteModel *route = self.routeArr[i];
+            if ([route.routeId isEqualToString:self.routeId]) {
+                self.row = i;
+                break;
+            }
+        }
+        [self.listTableView reloadData];
+        [self showListView];
+        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:self.row inSection:0];
+        [self.listTableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionTop animated:NO];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+    }];
+}
+
+
+#pragma mark - event response
+- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+{
+    [self hide];
+}
+
+
+#pragma mark - getters and setters
+- (UITableView *)listTableView
+{
+    if (_listTableView == nil) {
+        self.listTableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 64, SCREEN_WIDTH, 0) style:UITableViewStylePlain];
+        [self addSubview:self.listTableView];
+        self.listTableView.dataSource = self;
+        self.listTableView.delegate = self;
+        self.listTableView.bounces = NO;
+        self.listTableView.separatorInset = UIEdgeInsetsMake(0, -15 * UISCALE, 0, 0);
+    }
+    return _listTableView;
+}
+
+- (NSMutableArray *)routeArr
+{
+    if (_routeArr == nil) {
+        RouteModel *route = [[RouteModel alloc] init];
+        route.routeId = @"0";
+        route.routeName = @"全部线路";
+        self.routeArr = [NSMutableArray arrayWithObject:route];
+    }
+    return _routeArr;
+}
+
+
+
+@end

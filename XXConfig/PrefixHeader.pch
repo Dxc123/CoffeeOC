@@ -1,0 +1,130 @@
+//
+//  PrefixHeader.pch
+//  CoffeeOC
+//
+//  Created by Dxc_iOS on 2017/4/12.
+//  Copyright © 2017年 Dxc_iOS. All rights reserved.
+//
+
+#ifndef PrefixHeader_pch
+#define PrefixHeader_pch
+
+#import "NetWorkManager.h"
+#import "APIConfig.h"
+#import "XXHomeHandle.h"
+#import "XXReportHandle.h"
+#import "XXToolHandle.h"
+#import "XXLoginHandle.h"
+#import "XXNetWorkHandle.h"
+#import "XXUserManager.h"
+#import "XWAlert.h"
+#import "MBProgressHUD+Tools_cc.h"
+#import "MBProgressHUD+Tools_cc.h"
+#import "UIView+Toast.h"
+#import "UIColor+color.h"//16进制颜色转换成RGB颜色
+#import "MLMSegmentManager.h"
+
+//第三方库头文件
+
+#import <SWRevealViewController/SWRevealViewController.h>//侧滑菜单
+#import <SDAutoLayout.h>
+#import <FMDB.h>
+#import <FMDatabase.h>
+#import <SVProgressHUD.h>
+#import <YYModel.h>
+#import <MJRefresh.h>
+#import <IQKeyboardManager.h>
+#import <IQKeyboardReturnKeyHandler.h>
+#import <Masonry.h>
+#import <AFNetworking.h>
+#import <MBProgressHUD.h>
+//#import <MBProgressHUD+BWMExtension.h>
+#import <HYBNetworking.h>
+#import <PPBadgeView.h>
+#import <HMSegmentedControl.h> //分段SegmentedControl
+#import <WRNavigationBar/WRNavigationBar.h>//设置状态栏、导航栏按钮、标题、颜色、透明度，偏移等
+#import <DZNEmptyDataSet/UIScrollView+EmptyDataSet.h>
+
+
+
+#ifdef DEBUG
+#define NSLog(s, ... ) NSLog( @"[%@ in line %d] ==>\n%@", [[NSString stringWithUTF8String:__FILE__] lastPathComponent], __LINE__, [NSString stringWithFormat:(s), ##__VA_ARGS__] )
+#else
+#define NSLog(s, ... )
+#endif
+
+
+//获取屏幕 宽度、高度
+#define SCREEN_WIDTH ([UIScreen mainScreen].bounds.size.width)
+#define SCREEN_HEIGHT ([UIScreen mainScreen].bounds.size.height)
+//适配
+#define UISCALE [UIScreen mainScreen].bounds.size.width/375
+#define kScaleW   [UIScreen mainScreen].bounds.size.width/375
+#define kScaleH    [UIScreen mainScreen].bounds.size.height/667
+//字体font
+#define FONT_OF_SIZE(size) [UIFont systemFontOfSize:size*UISCALE]
+#define FontNotoSansLightWithSafeSize(FontSize) [UIFont systemFontOfSize:FontSize*UISCALE]?[UIFont systemFontOfSize:FontSize*UISCALE]:[UIFont systemFontOfSize:FontSize]
+
+//图片
+#define IMAGE(imageName) [UIImage imageNamed:imageName]
+
+//设置颜色
+#define RGB(r,g,b) [UIColor colorWithRed:r/255.0 green:g/255.0 blue:b/255.0 alpha:1.0]
+//随机颜色
+#define RandomColor [UIColor colorWithRed:arc4random_uniform(256)/255.0 green:arc4random_uniform(256)/255.0 blue:arc4random_uniform(256)/255.0 alpha:1]
+
+#define BLUE RGB_COLOR(68, 135, 255)
+
+#define RGBACOLOR(r,g,b,a)  [UIColor colorWithRed:(r)/255.0 green:(g)/255.0 blue:(b)/255.0 alpha:(a)] //颜色RGBA
+#define COLOR_GUZHANG  [UIColor colorWithRed:255/255.0 green:112/255.0 blue:125/255.0 alpha:1] //故障
+#define COLOR_DUANWANG  [UIColor colorWithRed:255/255.0 green:117/255.0 blue:75/255.0 alpha:1] //断网
+#define COLOR_QUEBI  [UIColor colorWithRed:245/255.0 green:166/255.0 blue:35/255.0 alpha:1] //缺币
+#define COLOR_BUHUO  [UIColor colorWithRed:68/255.0 green:232/255.0 blue:198/255.0 alpha:1] //补货
+#define COLOR_MAIN  [UIColor colorWithRed:68/255.0 green:138/255.0 blue:255/255.0 alpha:1] //主色（蓝）
+#define COLOR_GRAY  [UIColor colorWithRed:153/255.0 green:153/255.0 blue:153/255.0 alpha:1] //主色（灰）
+//分割线颜色
+#define separeLineColor RGBACOLOR(206,206,206,1)
+//cell的点击高亮颜色
+#define SELECTHIGHTCOLOR  RGBACOLOR(216,216,216,1)
+
+
+
+
+
+#define RGB_COLOR(r, g, b) [UIColor colorWithRed:r/255.0 green:g/255.0 blue:b/255.0 alpha:1]
+
+#define BUHUO_COLOR RGB_COLOR(68, 232, 198)
+
+#define QUEBI_COLOR RGB_COLOR(245, 166, 35)
+
+#define DUANWANG_COLOR RGB_COLOR(255, 117, 75)
+
+#define GUZHANG_COLOR RGB_COLOR(255, 107, 121)
+
+#define LINE_COLOR RGB_COLOR(210, 210, 210)
+
+#define MAIN_COLOR RGB_COLOR(38, 50, 56)
+
+#define MAIN_SELECTED_COLOR RGB_COLOR(72, 89, 97)
+
+
+
+#define USER_DEFAULTS [NSUserDefaults standardUserDefaults]
+
+#define SECTION_HEIGHT 50
+
+
+#define M_PI        3.14159265358979323846264338327950288   /* pi             */
+#define M_PI_2      1.57079632679489661923132169163975144   /* pi/2           */
+
+
+
+
+
+
+
+
+// Include any system framework and library headers here that should be included in all compilation units.
+// You will also need to set the Prefix Header build setting of one or more of your targets to reference this file.
+
+#endif /* PrefixHeader_pch */
